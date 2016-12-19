@@ -14,9 +14,12 @@ import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TextAnnotation
 import edu.illinois.cs.cogcomp.core.datastructures.textannotation.TokenLabelView;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.Configurator;
 import edu.illinois.cs.cogcomp.core.utilities.configuration.ResourceManager;
-import edu.illinois.cs.cogcomp.depparse.DepInst;
-import edu.illinois.cs.cogcomp.depparse.DepStruct;
-import edu.illinois.cs.cogcomp.depparse.io.CONLLReader;
+//import edu.illinois.cs.cogcomp.depparse.DepInst;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.features.DependencyInstance;
+//import edu.illinois.cs.cogcomp.depparse.DepStruct;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.io.DepInst;
+import edu.illinois.cs.cogcomp.sl.applications.depparse.io.DepStruct;
+//import edu.illinois.cs.cogcomp.depparse.io.CONLLReader;
 import edu.illinois.cs.cogcomp.nlp.common.PipelineConfigurator;
 import edu.illinois.cs.cogcomp.nlp.pipeline.IllinoisPipelineFactory;
 import edu.illinois.cs.cogcomp.nlp.tokenizer.Tokenizer.Tokenization;
@@ -33,7 +36,7 @@ import se.lth.cs.srl.util.Util;
 
 public class IllinoisPreprocessor extends Preprocessor {
 
-	protected final AnnotatorService as;
+	//protected final AnnotatorService as;
 	protected final SLModel parser;
 	
 	public IllinoisPreprocessor(Tokenizer tokenizer, String modelfile) {
@@ -62,8 +65,8 @@ public class IllinoisPreprocessor extends Preprocessor {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-		as = temp1;
-		CONLLReader.as = as;
+		//as = temp1;
+		//CONLLReader.as = as;
 		parser = temp2;
 	}
 
@@ -87,13 +90,13 @@ public class IllinoisPreprocessor extends Preprocessor {
 			tmp[i] = instance.forms[i+1];
 		tokens.add(tmp);		
 		TextAnnotation annotation = BasicTextAnnotationBuilder.createTextAnnotationFromTokens("", "", tokens);
-		try {
-			as.addView(annotation, ViewNames.POS);
-			as.addView(annotation, ViewNames.LEMMA);
+		/*try {
+			//as.addView(annotation, ViewNames.POS);
+			//as.addView(annotation, ViewNames.LEMMA);
 			//as.addView(annotation, ViewNames.SHALLOW_PARSE);
 		} catch (AnnotatorException e) {
 			e.printStackTrace();
-		}
+		}*/
 		// add preprocessing information to return value object
 		TokenLabelView POSView = (TokenLabelView) annotation.getView(ViewNames.POS);
 		TokenLabelView LemmaView = (TokenLabelView) annotation.getView(ViewNames.LEMMA);
@@ -103,10 +106,11 @@ public class IllinoisPreprocessor extends Preprocessor {
 		}
 		
 		// dependency parse preprocessed text
-		DepInst sent = new DepInst(annotation);
+		//DepInst sent = new DepInst(annotation);
+		DependencyInstance sent = new DependencyInstance();
 		DepStruct struct = null;
 		try {
-			struct = (DepStruct) parser.infSolver.getBestStructure(parser.wv, sent);
+			struct = (DepStruct) parser.infSolver.getBestStructure(parser.wv, new DepInst(sent));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
